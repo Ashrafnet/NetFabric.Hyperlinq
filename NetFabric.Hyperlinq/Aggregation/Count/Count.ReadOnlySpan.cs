@@ -9,7 +9,10 @@ namespace NetFabric.Hyperlinq
         static int Count<TSource>(this ReadOnlySpan<TSource> source)
             => source.Length;
 
-        [GeneratorIgnore]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static int Count<TSource>(this ReadOnlySpan<TSource> source, Func<TSource, bool> predicate)
+            => source.Count(new FunctionWrapper<TSource, bool>(predicate));
+
         static int Count<TSource, TPredicate>(this ReadOnlySpan<TSource> source, TPredicate predicate)
             where TPredicate: struct, IFunction<TSource, bool>
         {
@@ -21,7 +24,10 @@ namespace NetFabric.Hyperlinq
             return counter;
         }
 
-        [GeneratorIgnore]
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static int Count<TSource>(this ReadOnlySpan<TSource> source, Func<TSource, int, bool> predicate)
+            => source.CountAt(new FunctionWrapper<TSource, int, bool>(predicate));
+
         static int CountAt<TSource, TPredicate>(this ReadOnlySpan<TSource> source, TPredicate predicate)
             where TPredicate: struct, IFunction<TSource, int, bool>
         {

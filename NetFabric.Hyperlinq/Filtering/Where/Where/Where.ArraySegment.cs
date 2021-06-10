@@ -96,6 +96,24 @@ namespace NetFabric.Hyperlinq
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
             public int Count()
                 => ((ReadOnlySpan<TSource>)source.AsSpan()).Count(predicate);
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public int Count(Func<TSource, bool> predicate)
+                => Count(new FunctionWrapper<TSource, bool>(predicate));
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public int Count<TPredicate2>(TPredicate2 predicate)
+                where TPredicate2 : struct, IFunction<TSource, bool>
+                => ((ReadOnlySpan<TSource>)source.AsSpan()).Count(new PredicatePredicateCombination<TPredicate, TPredicate2, TSource>(this.predicate, predicate));
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public int Count(Func<TSource, int, bool> predicate)
+                => CountAt(new FunctionWrapper<TSource, int, bool>(predicate));
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public int CountAt<TPredicate2>(TPredicate2 predicate)
+                where TPredicate2 : struct, IFunction<TSource, int, bool>
+                => ((ReadOnlySpan<TSource>)source.AsSpan()).CountAt(new PredicatePredicateAtCombination<TPredicate, TPredicate2, TSource>(this.predicate, predicate));
             
             #endregion
             #region Quantifier
